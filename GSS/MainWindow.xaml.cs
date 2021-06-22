@@ -15,7 +15,7 @@ namespace GSS
             var optionsBuilder = new DbContextOptionsBuilder<GoodsContext>();
 
             var options = optionsBuilder
-                    .UseSqlServer(@"Server=.\SQLEXPRESS;Database=GSSDB;Trusted_Connection=True;")
+                    .UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\GSSDB.mdf;Integrated Security=True;Connect Timeout=30")
                     .Options;
             using (GoodsContext db = new GoodsContext(options))
             {
