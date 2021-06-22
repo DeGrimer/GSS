@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLibrary.models
 {
     public class Sale
     {
         public int id { get; set; }
-        public int good_id { get; set; }
-        public int good_count { get; set; }
-        public DateTime date_sold { get; set; }
+        [Column("good_id")] public int GoodId { get; set; }
+
+        [Column("good_count")] public int SoldAmount { get; set; }
+
+        [Column("date_sold")] public DateTime DateSold { get; set; }
+        public Goods Good { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace DataAccessLibrary.models
         public int general_storage { get; set; }
         public int cold_storage { get; set; }
         public int freezer_storage { get; set; }
+
+        public List<Goods> Goods { get; set; } = new List<Goods>();
     }
 }

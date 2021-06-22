@@ -191,12 +191,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="OrderLogic\GoodBatch.cs" />
+    <Compile Include="OrderLogic\Order.cs" />
+    <Compile Include="OrderLogic\OrderCalculator.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OrderLogic\StorageRatingComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -215,7 +219,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".gitignore" />
     <Content Include="GSSDB.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
