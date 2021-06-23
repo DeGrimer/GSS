@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using GSS;
 
 namespace DataAccessLibrary.models
 {
@@ -24,6 +24,14 @@ namespace DataAccessLibrary.models
         [NotMapped] public double Popularity { get; set; }
         [NotMapped] public double StorageEase => GetStorageEase();
         [NotMapped] public int AvailableAmount => Supplies.Count(s => !s.IsExpired);
+        [NotMapped] public double StorageRating => (double) price * Popularity * StorageEase;
+
+        public List<Sale> GetRecentSales(int dayCount)
+        {
+            return Sales
+                .Where(s => DateTime.Now.AddDays(-dayCount) < s.DateSold)
+                .ToList();
+        }
 
         private double GetStorageEase()
         {

@@ -9,7 +9,7 @@ namespace GSS
             if (ReferenceEquals(x, y)) return 0;
             if (ReferenceEquals(null, y)) return 1;
             if (ReferenceEquals(null, x)) return -1;
-            return x.StorageRating.CompareTo(y.StorageRating);
+            return -1 * x.Good.StorageRating.CompareTo(y.Good.StorageRating);
         }
     }
 }

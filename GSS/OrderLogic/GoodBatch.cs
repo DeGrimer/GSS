@@ -7,12 +7,9 @@ namespace GSS
         public readonly Goods Good;
         public int Amount { get; set; }
 
-        public double StorageRating => Amount * (double) Good.price * Good.Popularity * Good.StorageEase;
-
-        public GoodBatch(Goods good, int amount)
+        public GoodBatch(Goods good)
         {
             Good = good;
-            Amount = amount;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DataAccessLibrary;
 using DataAccessLibrary.models;
 
 namespace GSS
@@ -10,20 +11,15 @@ namespace GSS
         private const int SaleDayCount = 7;
         private const double OrderAmountMargin = 0.1;
 
-        public static Order MakeOrder(List<Department> depts, List<Sale> sales)
+        public static Order MakeOrder(List<Department> depts, List<Sale> sales, StorageParameters parameters)
         {
             // сбор всех товаров, которые нужно заказать, и их предполагаемого количества
             var goodsToRestock = new List<GoodBatch>();
             foreach (var dept in depts)
                 goodsToRestock.AddRange(GetGoodsToRestock(dept, sales));
 
-            // todo придумать, в каком классе вычисляются объемы трех видов хранилищ и как их передать
-            var gen = 100;
-            var cold = 100;
-            var freezer = 100;
-
             // распределение товаров по складам
-            if (AllStorageAvailable(gen, cold, freezer, goodsToRestock))
+            if (AllStorageAvailable(parameters, goodsToRestock))
                 return new Order(goodsToRestock);
             else
                 return DistributeAvailableStorage(goodsToRestock);
@@ -31,22 +27,25 @@ namespace GSS
 
         private static Order DistributeAvailableStorage(List<GoodBatch> goodsToRestock)
         {
-            // sort goodBatch list by desc rating
+            goodsToRestock.Sort(new StorageRatingComparer());
+            var goodsByStorage = goodsToRestock.GroupBy(g => g.Good.storage_kind);
 
-            // find genStorage, coldStorage, freezerStorage
-
-            // do something to fill storage
+            foreach (var group in goodsByStorage)
+            {
+                // заполняем каждый вид склада товарами, начиная от самых выгодных 
+            }
+            
             throw new NotImplementedException();
         }
 
-        private static bool AllStorageAvailable(int genStorage, int coldStorage, int freezerStorage,
-            List<GoodBatch> goods)
+        private static bool AllStorageAvailable(StorageParameters parameters, List<GoodBatch> goods)
         {
             var generalGoodAmounts = GetRequiredStorageAmount(goods, StorageRequirements.General);
             var coldGoodAmounts = GetRequiredStorageAmount(goods, StorageRequirements.Cold);
             var freezerGoodAmounts = GetRequiredStorageAmount(goods, StorageRequirements.Freezer);
-            return genStorage >= generalGoodAmounts && coldStorage >= coldGoodAmounts &&
-                   freezerStorage >= freezerGoodAmounts;
+            return parameters[StorageRequirements.General] >= generalGoodAmounts &&
+                   parameters[StorageRequirements.Cold] >= coldGoodAmounts &&
+                   parameters[StorageRequirements.Freezer] >= freezerGoodAmounts;
         }
 
         private static int GetRequiredStorageAmount(List<GoodBatch> goods, StorageRequirements reqs)
@@ -67,34 +66,26 @@ namespace GSS
         }
 
         // вычисляем предполагаемое количество, если на складе не хватает - добавляем в список
-        private static void CheckAddToRestockList(Goods article, List<Sale> allRecentSales, List<GoodBatch> toRestock)
+        private static void CheckAddToRestockList(Goods good, List<Sale> allRecentSales, List<GoodBatch> toRestock)
         {
-            var recentGoodSales = GetRecentGoodSales(article);
+            var recentGoodSales = good.GetRecentSales(SaleDayCount);
             var expectedAmount = GetExpectedOrderAmount(recentGoodSales);
 
-            var goodBatch = new GoodBatch(article, expectedAmount);
-            if (goodBatch.Good.AvailableAmount < goodBatch.Amount)
+            var goodBatch = new GoodBatch(good);
+            if (goodBatch.Good.AvailableAmount < expectedAmount)
             {
-                article.Popularity = GetGoodPopularity(recentGoodSales, allRecentSales);
+                goodBatch.Amount = expectedAmount - goodBatch.Good.AvailableAmount;
+                good.Popularity = GetGoodPopularity(recentGoodSales, allRecentSales);
                 toRestock.Add(goodBatch);
             }
         }
 
-        // todo maybe move method to Goods.cs
-        private static double GetGoodPopularity(List<Sale> goodSales, List<Sale> allSales)
+        private static double GetGoodPopularity(List<Sale> recentGoodSales, List<Sale> allRecentSales)
         {
-            var itemSoldAmount = goodSales.Sum(s => s.SoldAmount);
-            var allSoldAmount = allSales.Sum(s => s.SoldAmount);
-            var p = (double) itemSoldAmount / allSoldAmount;
-            return Math.Round(p, 2);
-        }
-
-        // продажи за последние N дней
-        private static List<Sale> GetRecentGoodSales(Goods good)
-        {
-            return good.Sales
-                .Where(s => s.Good == good && DateTime.Now.AddDays(-SaleDayCount) < s.DateSold)
-                .ToList();
+            var itemSoldAmount = recentGoodSales.Sum(s => s.SoldAmount);
+            var allSoldAmount = allRecentSales.Sum(s => s.SoldAmount);
+            var result = (double) itemSoldAmount / allSoldAmount;
+            return Math.Round(result, 2);
         }
 
         // среднее количество проданного товара + N %

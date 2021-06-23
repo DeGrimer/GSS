@@ -1,4 +1,4 @@
-namespace GSS
+namespace DataAccessLibrary
 {
     public enum StorageRequirements
     {
