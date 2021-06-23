@@ -11,46 +11,41 @@ namespace GSS
         private const int SaleDayCount = 7;
         private const double OrderAmountMargin = 0.1;
 
-        public static Order MakeOrder(List<Department> depts, List<Sale> sales, StorageParameters parameters)
+        public static Order MakeOrder(List<Department> depts, List<Sale> sales, StorageParameters storageParams)
         {
-            // сбор всех товаров, которые нужно заказать, и их предполагаемого количества
             var goodsToRestock = new List<GoodBatch>();
             foreach (var dept in depts)
                 goodsToRestock.AddRange(GetGoodsToRestock(dept, sales));
 
-            // распределение товаров по складам
-            if (AllStorageAvailable(parameters, goodsToRestock))
-                return new Order(goodsToRestock);
-            else
-                return DistributeAvailableStorage(goodsToRestock);
+            return DistributeAvailableStorage(storageParams, goodsToRestock);
         }
 
-        private static Order DistributeAvailableStorage(List<GoodBatch> goodsToRestock)
+        private static Order DistributeAvailableStorage(StorageParameters storageParams, List<GoodBatch> goodsToRestock)
         {
+            var order = new Order();
             goodsToRestock.Sort(new StorageRatingComparer());
             var goodsByStorage = goodsToRestock.GroupBy(g => g.Good.storage_kind);
 
             foreach (var group in goodsByStorage)
+                MakeOrderByStorageKind(storageParams, group, order);
+
+            return order;
+        }
+
+        private static void MakeOrderByStorageKind(StorageParameters storageParams,
+            IGrouping<StorageRequirements, GoodBatch> storage, Order order)
+        {
+            var maxAmount = storageParams[storage.Key];
+            foreach (var goodBatch in storage)
             {
-                // заполняем каждый вид склада товарами, начиная от самых выгодных 
+                if (maxAmount <= 0)
+                    break;
+
+                if (maxAmount < goodBatch.Amount)
+                    goodBatch.Amount = maxAmount;
+                order.Goods.Add(goodBatch);
+                maxAmount -= goodBatch.Amount;
             }
-            
-            throw new NotImplementedException();
-        }
-
-        private static bool AllStorageAvailable(StorageParameters parameters, List<GoodBatch> goods)
-        {
-            var generalGoodAmounts = GetRequiredStorageAmount(goods, StorageRequirements.General);
-            var coldGoodAmounts = GetRequiredStorageAmount(goods, StorageRequirements.Cold);
-            var freezerGoodAmounts = GetRequiredStorageAmount(goods, StorageRequirements.Freezer);
-            return parameters[StorageRequirements.General] >= generalGoodAmounts &&
-                   parameters[StorageRequirements.Cold] >= coldGoodAmounts &&
-                   parameters[StorageRequirements.Freezer] >= freezerGoodAmounts;
-        }
-
-        private static int GetRequiredStorageAmount(List<GoodBatch> goods, StorageRequirements reqs)
-        {
-            return goods.Where(g => g.Good.storage_kind == reqs).Select(g => g.Amount).Sum();
         }
 
         // собираем все товары отдела, которые нужно заказать
@@ -59,8 +54,8 @@ namespace GSS
             var toRestock = new List<GoodBatch>();
             var allRecentSales = allSales.Where(s => DateTime.Now.AddDays(-SaleDayCount) < s.DateSold).ToList();
 
-            foreach (var article in dept.Goods)
-                CheckAddToRestockList(article, allRecentSales, toRestock);
+            foreach (var good in dept.Goods)
+                CheckAddToRestockList(good, allRecentSales, toRestock);
 
             return toRestock;
         }

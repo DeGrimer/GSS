@@ -5,12 +5,12 @@ namespace GSS
 {
     public class Order
     {
-        public List<GoodBatch> Goods;
-        public DateTime DateCreated;
+        public readonly List<GoodBatch> Goods;
+        public readonly DateTime DateCreated;
 
-        public Order(List<GoodBatch> goods)
+        public Order()
         {
-            Goods = goods;
+            Goods = new List<GoodBatch>();
             DateCreated = DateTime.Today;
         }
     }
