@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GSS"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" SizeToContent="WidthAndHeight">
+    <StackPanel Orientation="Horizontal">
+            <Button x:Name="GoodsListButton" Content="Открыть склад" Width="100" Height="50" Click="GoodsListButton_Click" Margin="10"/>
+            <Button x:Name="OrderButton" Content="Создать заказ" Width="100" Height="50" Click="OrderButton_Click" Margin="10"/>
+        </StackPanel>
 </Window>

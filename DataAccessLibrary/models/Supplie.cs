@@ -10,7 +10,7 @@ namespace DataAccessLibrary.models
         public int id { get; set; }
         [Column("good_id")] public int GoodId { get; set; }
         public DateTime date_supplied { get; set; }
-        public DateTime date_sold { get; set; }
+        public DateTime? date_sold { get; set; }
         public int remaining_qty { get; set; }
 
         public Goods Good { get; set; }

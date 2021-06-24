@@ -9,10 +9,12 @@ namespace DataAccessLibrary
     public class GoodsContext : DbContext
     {
         
-        public GoodsContext(DbContextOptions<GoodsContext> option): base(option) { }
         public DbSet<Goods> goods { get; set; }
         public DbSet<Department> departments { get; set; }
         public DbSet<Sale> sales { get; set; }
         public DbSet<Supplie> supplies { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+            => options.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\GSSDB.mdf;Integrated Security=True;Connect Timeout=30");
     }
 }

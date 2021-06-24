@@ -23,7 +23,7 @@ namespace DataAccessLibrary.models
 
         [NotMapped] public double Popularity { get; set; }
         [NotMapped] public double StorageEase => GetStorageEase();
-        [NotMapped] public int AvailableAmount => Supplies.Count(s => !s.IsExpired);
+        [NotMapped] public int AvailableAmount => Supplies.Where(s => !s.IsExpired).Sum(s => s.remaining_qty);
         [NotMapped] public double StorageRating => (double) price * Popularity * StorageEase;
 
         public List<Sale> GetRecentSales(int dayCount)
