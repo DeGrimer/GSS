@@ -1,6 +1,6 @@
 ﻿using DataAccessLibrary;
 using GSS.StorageLogic;
-using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Linq;
 
 namespace GSS
@@ -10,8 +10,15 @@ namespace GSS
     /// </summary>
     public partial class MainWindow
     {
+        private const string OrderDirectoryPath = @".\orders";
+
         public MainWindow()
         {
+            if (!Directory.Exists(OrderDirectoryPath))
+            {
+                Directory.CreateDirectory(OrderDirectoryPath);
+            }
+
             InitializeComponent();
             using (var db = new GoodsContext())
             {
@@ -31,7 +38,7 @@ namespace GSS
 
         private void OrderButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var ow = new OrderWindow();
+            var ow = new OrderWindow(OrderDirectoryPath);
             ow.Show();
         }
     }

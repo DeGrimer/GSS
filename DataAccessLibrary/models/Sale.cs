@@ -12,5 +12,10 @@ namespace DataAccessLibrary.models
 
         [Column("date_sold")] public DateTime DateSold { get; set; }
         public Goods Good { get; set; }
+
+        public override string ToString()
+        {
+            return $"[{DateSold}] {Good}: {SoldAmount}";
+        }
     }
 }

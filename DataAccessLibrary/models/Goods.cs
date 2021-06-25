@@ -39,5 +39,10 @@ namespace DataAccessLibrary.models
                 return expiration_days < LongExpirationDaysCount ? 0.6 : 0.8;
             return expiration_days < LongExpirationDaysCount ? 1.0 : 0.9;
         }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }

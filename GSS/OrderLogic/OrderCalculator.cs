@@ -6,23 +6,25 @@ using DataAccessLibrary.models;
 
 namespace GSS
 {
-    public class OrderCalculator
+    public static class OrderCalculator
     {
         private const int SaleDayCount = 7;
         private const double OrderAmountMargin = 0.1;
 
-        public static Order MakeOrder(List<Department> depts, List<Sale> sales, StorageParameters storageParams)
+        public static List<GoodBatch> MakeOrder(List<Department> depts, List<Sale> sales, StorageParameters storageParams)
         {
             var goodsToRestock = new List<GoodBatch>();
+            var allRecentSales = sales.Where(s => DateTime.Now.AddDays(-SaleDayCount) < s.DateSold).ToList();
+
             foreach (var dept in depts)
-                goodsToRestock.AddRange(GetGoodsToRestock(dept, sales));
+                goodsToRestock.AddRange(GetGoodsToRestock(dept, allRecentSales));
 
             return DistributeAvailableStorage(storageParams, goodsToRestock);
         }
 
-        private static Order DistributeAvailableStorage(StorageParameters storageParams, List<GoodBatch> goodsToRestock)
+        private static List<GoodBatch> DistributeAvailableStorage(StorageParameters storageParams, List<GoodBatch> goodsToRestock)
         {
-            var order = new Order();
+            var order = new List<GoodBatch>();
             goodsToRestock.Sort(new StorageRatingComparer());
             var goodsByStorage = goodsToRestock.GroupBy(g => g.Good.storage_kind);
 
@@ -33,7 +35,7 @@ namespace GSS
         }
 
         private static void MakeOrderByStorageKind(StorageParameters storageParams,
-            IGrouping<StorageRequirements, GoodBatch> storage, Order order)
+            IGrouping<StorageRequirements, GoodBatch> storage, List<GoodBatch> order)
         {
             var maxAmount = storageParams[storage.Key];
             foreach (var goodBatch in storage)
@@ -43,17 +45,15 @@ namespace GSS
 
                 if (maxAmount < goodBatch.Amount)
                     goodBatch.Amount = maxAmount;
-                order.Goods.Add(goodBatch);
+                order.Add(goodBatch);
                 maxAmount -= goodBatch.Amount;
             }
         }
 
         // собираем все товары отдела, которые нужно заказать
-        private static List<GoodBatch> GetGoodsToRestock(Department dept, List<Sale> allSales)
+        private static List<GoodBatch> GetGoodsToRestock(Department dept, List<Sale> allRecentSales)
         {
             var toRestock = new List<GoodBatch>();
-            var allRecentSales = allSales.Where(s => DateTime.Now.AddDays(-SaleDayCount) < s.DateSold).ToList();
-
             foreach (var good in dept.Goods)
                 CheckAddToRestockList(good, allRecentSales, toRestock);
 
@@ -67,9 +67,9 @@ namespace GSS
             var expectedAmount = GetExpectedOrderAmount(recentGoodSales);
 
             var goodBatch = new GoodBatch(good);
-            if (goodBatch.Good.AvailableAmount < expectedAmount)
+            if (good.AvailableAmount < expectedAmount)
             {
-                goodBatch.Amount = expectedAmount - goodBatch.Good.AvailableAmount;
+                goodBatch.Amount = expectedAmount - good.AvailableAmount;
                 good.Popularity = GetGoodPopularity(recentGoodSales, allRecentSales);
                 toRestock.Add(goodBatch);
             }
@@ -79,16 +79,18 @@ namespace GSS
         {
             var itemSoldAmount = recentGoodSales.Sum(s => s.SoldAmount);
             var allSoldAmount = allRecentSales.Sum(s => s.SoldAmount);
-            var result = (double) itemSoldAmount / allSoldAmount;
+            var result = (double)itemSoldAmount / allSoldAmount;
             return Math.Round(result, 2);
         }
 
         // среднее количество проданного товара + N %
         private static int GetExpectedOrderAmount(List<Sale> recentSales)
         {
-            var avg = recentSales.Average(s => s.SoldAmount);
-            var orderAmount = (int) Math.Ceiling(avg);
-            var margin = (int) Math.Ceiling(orderAmount * OrderAmountMargin);
+            if (recentSales.Count == 0)
+                return 0;
+            var avg = recentSales.Sum(s => s.SoldAmount) / (double)SaleDayCount;
+            var orderAmount = (int)Math.Ceiling(avg);
+            var margin = (int)Math.Ceiling(orderAmount * OrderAmountMargin);
             return orderAmount + margin;
         }
     }

@@ -11,5 +11,14 @@ namespace GSS
         {
             Good = good;
         }
+
+        public string Name => Good.ToString();
+
+        public string DepartmentName => $"Отдел \"{Good.Department}\"";
+
+        public override string ToString()
+        {
+            return $"{Good}: {Amount}";
+        }
     }
 }
