@@ -1,20 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace DataAccessLibrary.models
 {
     public class Supplie
     {
-        public int id { get; set; }
+        [Column("id")] public int Id { get; set; }
         [Column("good_id")] public int GoodId { get; set; }
-        public DateTime date_supplied { get; set; }
-        public DateTime? date_sold { get; set; }
-        public int remaining_qty { get; set; }
+
+        [Column("date_supplied")] public DateTime DateSupplied { get; set; }
+
+        [Column("date_sold")] public DateTime? DateSold { get; set; }
+        [Column("remaining_qty")] public int RemainingQuantity { get; set; }
 
         public Goods Good { get; set; }
-        
-        [NotMapped] public bool IsExpired => date_supplied.AddDays(Good.expiration_days) < DateTime.Now;
+
+        [NotMapped] public bool IsExpired => DateSupplied.AddDays(Good.ExpirationDaysCount) < DateTime.Now;
+
+        public string GoodName => Good.Name;
+
+        public Supplie()
+        {
+        }
+
+        public Supplie(Goods good, int amount)
+        {
+            Good = good;
+            GoodId = good.Id;
+            RemainingQuantity = amount;
+        }
     }
 }

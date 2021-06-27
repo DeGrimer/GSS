@@ -7,12 +7,12 @@ namespace DataAccessLibrary.models
 {
     public class Goods
     {
-        public int id { get; set; }
+        [Column("id")] public int Id { get; set; }
         [Column("dept_id")] public int DepartmentId { get; set; }
-        public decimal price { get; set; }
-        public string name { get; set; }
-        public StorageRequirements storage_kind { get; set; }
-        public int expiration_days { get; set; }
+        [Column("price")] public decimal Price { get; set; }
+        [Column("name")] public string Name { get; set; }
+        [Column("storage_kind")] public StorageRequirements StorageKind { get; set; }
+        [Column("expiration_days")] public int ExpirationDaysCount { get; set; }
 
         public Department Department { get; set; }
         public List<Sale> Sales { get; set; } = new List<Sale>();
@@ -23,8 +23,8 @@ namespace DataAccessLibrary.models
 
         [NotMapped] public double Popularity { get; set; }
         [NotMapped] public double StorageEase => GetStorageEase();
-        [NotMapped] public int AvailableAmount => Supplies.Where(s => !s.IsExpired).Sum(s => s.remaining_qty);
-        [NotMapped] public double StorageRating => (double) price * Popularity * StorageEase;
+        [NotMapped] public int AvailableAmount => Supplies.Where(s => !s.IsExpired).Sum(s => s.RemainingQuantity);
+        [NotMapped] public double StorageRating => (double)Price * Popularity * StorageEase;
 
         public List<Sale> GetRecentSales(int dayCount)
         {
@@ -36,13 +36,13 @@ namespace DataAccessLibrary.models
         private double GetStorageEase()
         {
             if (Popularity < HighPopularityThreshold)
-                return expiration_days < LongExpirationDaysCount ? 0.6 : 0.8;
-            return expiration_days < LongExpirationDaysCount ? 1.0 : 0.9;
+                return ExpirationDaysCount < LongExpirationDaysCount ? 0.6 : 0.8;
+            return ExpirationDaysCount < LongExpirationDaysCount ? 1.0 : 0.9;
         }
 
         public override string ToString()
         {
-            return name;
+            return Name;
         }
     }
 }

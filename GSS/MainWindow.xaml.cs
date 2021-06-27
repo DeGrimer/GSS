@@ -2,6 +2,7 @@
 using GSS.StorageLogic;
 using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace GSS
 {
@@ -40,6 +41,18 @@ namespace GSS
         {
             var ow = new OrderWindow(OrderDirectoryPath);
             ow.Show();
+        }
+
+        private void SupplyButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var sw = new SuppliesWindow();
+            sw.Show();
+        }
+
+        private void SaleButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var sw = new SalesWindow();
+            sw.Show();
         }
     }
 }

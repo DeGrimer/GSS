@@ -14,17 +14,17 @@ namespace GSS.StorageLogic
         {
             var gen = departments.Sum(s => 
             {
-                var amount = s.Goods.Where(z => z.storage_kind == StorageRequirements.General).Sum(z => z.AvailableAmount);
-                return s.general_storage - amount;
+                var amount = s.Goods.Where(z => z.StorageKind == StorageRequirements.General).Sum(z => z.AvailableAmount);
+                return s.GeneralStorage - amount;
             });
             var frez = departments.Sum(s =>
             {
-                var amount = s.Goods.Where(z => z.storage_kind == StorageRequirements.Freezer).Sum(z => z.AvailableAmount);
-                return s.freezer_storage - amount;
+                var amount = s.Goods.Where(z => z.StorageKind == StorageRequirements.Freezer).Sum(z => z.AvailableAmount);
+                return s.FreezerStorage - amount;
             });
             var cold = departments.Sum(s => {
-                var amount = s.Goods.Where(z => z.storage_kind == StorageRequirements.Cold).Sum(z => z.AvailableAmount);
-                return s.cold_storage - amount;
+                var amount = s.Goods.Where(z => z.StorageKind == StorageRequirements.Cold).Sum(z => z.AvailableAmount);
+                return s.ColdStorage - amount;
             });
             return new StorageParameters(gen, cold, frez);
         }

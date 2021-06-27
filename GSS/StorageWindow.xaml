@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GSS"
         mc:Ignorable="d"
-        Title="StorageWindow" Height="450" Width="800">
+        Title="StorageWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <DataGrid Name="goodsGrid" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Наименование" Binding="{Binding name}" />
-                <DataGridTextColumn Header="Цена" Binding="{Binding price}" />
+                <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="Цена" Binding="{Binding Price}" />
                 <DataGridTextColumn Header="Количество" Binding="{Binding  AvailableAmount}" />
             </DataGrid.Columns>
             <DataGrid.RowDetailsTemplate>
@@ -26,9 +26,9 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Text="Срок годности(в днях): " />
-                        <TextBlock Text="{Binding expiration_days}" Grid.Column="1"/>
+                        <TextBlock Text="{Binding ExpirationDaysCount}" Grid.Column="1"/>
                         <TextBlock Text="Тип хранения:" Grid.Row="1"/>
-                        <TextBlock Text="{Binding storage_kind}" Grid.Row="1" Grid.Column="1"/>
+                        <TextBlock Text="{Binding StorageKind}" Grid.Row="1" Grid.Column="1"/>
                     </Grid>
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>

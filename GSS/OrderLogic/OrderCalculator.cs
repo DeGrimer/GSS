@@ -26,7 +26,7 @@ namespace GSS
         {
             var order = new List<GoodBatch>();
             goodsToRestock.Sort(new StorageRatingComparer());
-            var goodsByStorage = goodsToRestock.GroupBy(g => g.Good.storage_kind);
+            var goodsByStorage = goodsToRestock.GroupBy(g => g.Good.StorageKind);
 
             foreach (var group in goodsByStorage)
                 MakeOrderByStorageKind(storageParams, group, order);

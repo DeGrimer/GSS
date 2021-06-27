@@ -5,7 +5,7 @@ namespace DataAccessLibrary.models
 {
     public class Sale
     {
-        public int id { get; set; }
+        [Column("id")] public int Id { get; set; }
         [Column("good_id")] public int GoodId { get; set; }
 
         [Column("good_count")] public int SoldAmount { get; set; }
@@ -13,6 +13,10 @@ namespace DataAccessLibrary.models
         [Column("date_sold")] public DateTime DateSold { get; set; }
         public Goods Good { get; set; }
 
+        public int RemainingAmount => Good.AvailableAmount;
+        public string GoodName => Good.Name;
+        public decimal GoodPrice => Good.Price;
+        
         public override string ToString()
         {
             return $"[{DateSold}] {Good}: {SoldAmount}";

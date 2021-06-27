@@ -348,3 +348,5 @@ MigrationBackup/
 .idea/
 GSS.sln.DotSettings.user
 GSS.csproj.DotSettings
+/GSS/GoodsListControl.xaml
+/GSS/GoodsListControl.xaml.cs
