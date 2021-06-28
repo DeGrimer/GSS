@@ -1,5 +1,6 @@
 ﻿using DataAccessLibrary;
 using GSS.StorageLogic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -20,15 +21,27 @@ namespace GSS
                 Directory.CreateDirectory(OrderDirectoryPath);
             }
 
+            RemoveExpiredGoods();
+
             InitializeComponent();
-            using (var db = new GoodsContext())
+
+        }
+
+        private void RemoveExpiredGoods()
+        {
+            using (var context = new GoodsContext())
             {
-                var goods = db.goods.ToList();
-                var sales = db.sales.ToList();
-                var departments = db.departments.ToList();
-                //var supplies = db.supplies.ToList();
+                var unsoldSupplies = context.supplies.Where(s => s.RemainingQuantity > 0).ToList();
+
+                foreach (var supply in unsoldSupplies)
+                {
+                    context.Entry(supply).Reference(s => s.Good).Load();
+                    if (supply.DateSupplied.AddDays(supply.Good.ExpirationDaysCount) < DateTime.Today)
+                        supply.RemainingQuantity = 0;
+                }
+
+                context.SaveChanges();
             }
-            var list = new ListAvailableGoods();
         }
 
         private void GoodsListButton_Click(object sender, System.Windows.RoutedEventArgs e)

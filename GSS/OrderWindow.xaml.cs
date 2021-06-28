@@ -70,6 +70,8 @@ namespace GSS
                 foreach (var goodBatch in _order)
                     sw.WriteLine($"{goodBatch.Good,-50} {goodBatch.Amount}");
             }
+
+            MessageBox.Show("Заказ сохранен."); 
         }
     }
 }

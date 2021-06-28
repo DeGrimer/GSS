@@ -3,19 +3,26 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="SalesWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="Продажи" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="4*" />
-        </Grid.ColumnDefinitions>
-        <StackPanel>
-            <Button Margin="10" Click="AddSaleButton_OnClick">
-                <TextBlock TextAlignment="Center">Добавить запись<LineBreak />о продаже</TextBlock>
-            </Button>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Наименование товара" VerticalContentAlignment="Center" Margin="10, 10, 0, 10" />
+            <ComboBox x:Name="GoodComboBox" Width="200" Height="30" Margin="10" VerticalContentAlignment="Center" />
+            <Label Content="Количество" VerticalContentAlignment="Center" Margin="0, 10" />
+            <TextBox x:Name="AmountBox" Width="50" Height="30" Margin="10" VerticalContentAlignment="Center"
+                     HorizontalContentAlignment="Center" />
+            <DatePicker x:Name="DatePicker" Margin="10" Width="100" Height="30" FirstDayOfWeek="Monday"
+                        VerticalContentAlignment="Center"
+                        SelectedDate="{x:Static sys:DateTime.Today}" />
+            <Button Content="Добавить запись" Margin="10" Height="30" Width="120" Click="AddSaleButton_OnClick" />
         </StackPanel>
-        <ListView x:Name="SalesView" Grid.Column="1">
+        <ListView x:Name="SalesView" Grid.Row="1">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" />
@@ -24,7 +31,6 @@
                     <GridViewColumn Header="Наименование" DisplayMemberBinding="{Binding GoodName}" />
                     <GridViewColumn Header="Цена" DisplayMemberBinding="{Binding GoodPrice}" />
                     <GridViewColumn Header="Количество" DisplayMemberBinding="{Binding SoldAmount}" />
-                    <!-- <GridViewColumn Header="Остаток на складе" DisplayMemberBinding="{Binding RemainingAmount}" /> -->
                 </GridView>
             </ListView.View>
         </ListView>

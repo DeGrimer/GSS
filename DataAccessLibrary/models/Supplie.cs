@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLibrary.models
 {
+    // [Table("supplies")]
     public class Supplie
     {
         [Column("id")] public int Id { get; set; }
@@ -23,11 +24,11 @@ namespace DataAccessLibrary.models
         {
         }
 
-        public Supplie(Goods good, int amount)
+        public Supplie(Goods good, int amount, DateTime dateSupplied)
         {
             Good = good;
-            GoodId = good.Id;
             RemainingQuantity = amount;
+            DateSupplied = dateSupplied;
         }
     }
 }

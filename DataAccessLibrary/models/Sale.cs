@@ -16,10 +16,22 @@ namespace DataAccessLibrary.models
         public int RemainingAmount => Good.AvailableAmount;
         public string GoodName => Good.Name;
         public decimal GoodPrice => Good.Price;
-        
+
         public override string ToString()
         {
             return $"[{DateSold}] {Good}: {SoldAmount}";
+        }
+
+        public Sale()
+        {
+        }
+
+        public Sale(Goods good, int soldAmount, DateTime dateSold)
+        {
+            Good = good;
+            GoodId = good.Id;
+            SoldAmount = soldAmount;
+            DateSold = dateSold;
         }
     }
 }

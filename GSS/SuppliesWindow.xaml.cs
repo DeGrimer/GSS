@@ -11,41 +11,48 @@ namespace GSS
     public partial class SuppliesWindow : Window
     {
         private readonly CollectionView _view;
-        private readonly GoodsContext _goodsContext = new GoodsContext();
         private readonly List<Supplie> _supplies;
 
         public SuppliesWindow()
         {
+            List<Goods> goods;
             InitializeComponent();
 
-            using (_goodsContext)
+            using (var context = new GoodsContext())
             {
-                var goods = _goodsContext.goods.ToList();
-                _supplies = _goodsContext.supplies.ToList();
+                goods = context.goods.ToList();
+                _supplies = context.supplies.ToList();
             }
 
+            GoodComboBox.ItemsSource = goods;
             SuppliesView.ItemsSource = _supplies;
             _view = (CollectionView) CollectionViewSource.GetDefaultView(SuppliesView.ItemsSource);
         }
 
         private void AddSupplyButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
-            // каким-то образом выбрать товар и количество
-            var good = new Goods();
-            var amount = 10;
+            var good = (Goods)GoodComboBox.SelectedItem;
+            var amountParsed = int.TryParse(AmountBox.Text, out var amount);
+            var date = DatePicker.SelectedDate ?? DateTime.Today;
 
-
-            var supply = new Supplie(good, amount);
-
-            using (_goodsContext)
+            if (GoodComboBox.SelectedIndex != -1 && amountParsed)
             {
-                _goodsContext.supplies.Add(supply);
-                _goodsContext.SaveChanges();
-            }
+                Supplie supply;
 
-            _supplies.Add(supply);
-            _view.Refresh();
+                using (var context = new GoodsContext())
+                {
+                    supply = new Supplie(context.goods.First(g => g.Id == good.Id), amount, date);
+                    context.supplies.Add(supply);
+                    context.SaveChanges();
+                }
+
+                _supplies.Add(supply);
+                _view.Refresh();
+            }
+            else
+            {
+                MessageBox.Show("Данные о поставке заполнены неверно.");
+            }
         }
     }
 }
