@@ -5,26 +5,27 @@ using System.Windows;
 using System.Windows.Data;
 using DataAccessLibrary;
 using DataAccessLibrary.models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GSS
 {
     public partial class SalesWindow : Window
     {
         private readonly List<Sale> _sales;
-        private readonly List<Goods> _goods;
         private readonly CollectionView _view;
 
         public SalesWindow()
         {
             InitializeComponent();
 
+            List<Goods> goods;
             using (var context = new GoodsContext())
             {
-                _goods = context.goods.ToList();
+                goods = context.goods.Include(g => g.Supplies).ToList();
                 _sales = context.sales.ToList();
             }
 
-            GoodComboBox.ItemsSource = _goods;
+            GoodComboBox.ItemsSource = goods;
             SalesView.ItemsSource = _sales;
             _view = (CollectionView)CollectionViewSource.GetDefaultView(SalesView.ItemsSource);
         }
@@ -35,7 +36,7 @@ namespace GSS
             var amountParsed = int.TryParse(AmountBox.Text, out var amount);
             var date = DatePicker.SelectedDate ?? DateTime.Today;
 
-            if (GoodComboBox.SelectedIndex != -1 && amountParsed)
+            if (GoodComboBox.SelectedIndex != -1 && amountParsed && amount <= good.AvailableAmount)
             {
                 Sale sale;
 
@@ -51,6 +52,8 @@ namespace GSS
                     sale = new Sale(context.goods.First(g => g.Id == good.Id), amount, date);
                     context.sales.Add(sale);
                     context.SaveChanges();
+
+                    MaxAmountLabel.Content = "/" + sale.Good.AvailableAmount.ToString();
                 }
 
                 _sales.Add(sale);
@@ -83,6 +86,15 @@ namespace GSS
                 }
                 index++;
             }
+        }
+
+        private void GoodComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (GoodComboBox.SelectedIndex == -1)
+                return;
+
+            var good = (Goods)GoodComboBox.SelectedItem;
+            MaxAmountLabel.Content = "/" + good.AvailableAmount.ToString();
         }
     }
 }

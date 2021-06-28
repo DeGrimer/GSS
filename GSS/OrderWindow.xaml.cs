@@ -7,17 +7,16 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using DataAccessLibrary.models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GSS
 {
     public partial class OrderWindow : Window
     {
         private readonly List<GoodBatch> _order;
-        private readonly List<GoodBatch> _manualOrder; // это для хранения добавленных вручную товаров
         private readonly List<Sale> _sales;
         private readonly List<Department> _depts;
         private readonly StorageParameters _storageParams;
-        private readonly List<Goods> _goods;
         private readonly CollectionView _view;
         private readonly string _dirpath;
 
@@ -25,7 +24,6 @@ namespace GSS
         {
             _dirpath = orderDirPath;
             _order = new List<GoodBatch>();
-            _manualOrder = new List<GoodBatch>();
 
             InitializeComponent();
             OrderGrid.ItemsSource = _order;
@@ -37,15 +35,10 @@ namespace GSS
             {
                 var supplies = db.supplies.ToList();
 
-                _goods = db.goods.ToList();
                 _sales = db.sales.ToList();
-                _depts = db.departments.ToList();
+                _depts = db.departments.Include(d => d.Goods).ToList();
                 _storageParams = StorageCalculate.CalculateStorageParameters(_depts);
             }
-        }
-
-        private void AddItemButton_Click(object sender, RoutedEventArgs e)
-        {
         }
 
         private void CreateOrderButton_Click(object sender, RoutedEventArgs e)
@@ -53,7 +46,6 @@ namespace GSS
             var autoOrder = OrderCalculator.MakeOrder(_depts, _sales, _storageParams);
 
             _order.Clear();
-            _order.AddRange(_manualOrder);
             _order.AddRange(autoOrder);
             _view.Refresh();
         }
@@ -71,7 +63,7 @@ namespace GSS
                     sw.WriteLine($"{goodBatch.Good,-50} {goodBatch.Amount}");
             }
 
-            MessageBox.Show("Заказ сохранен."); 
+            MessageBox.Show("Заказ сохранен.");
         }
     }
 }

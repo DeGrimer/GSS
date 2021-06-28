@@ -12,14 +12,16 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Label Content="Наименование товара" VerticalContentAlignment="Center" Margin="10, 10, 0, 10" />
-            <ComboBox x:Name="GoodComboBox" Width="200" Height="30" Margin="10" VerticalContentAlignment="Center" />
+            <Label Content="Наименование товара" VerticalContentAlignment="Center" Margin="10,10,5,10" />
+            <ComboBox x:Name="GoodComboBox" Width="200" Height="30" Margin="5,10" VerticalContentAlignment="Center" 
+                      SelectionChanged="GoodComboBox_SelectionChanged"/>
             <Label Content="Количество" VerticalContentAlignment="Center" Margin="0, 10" />
-            <TextBox x:Name="AmountBox" Width="50" Height="30" Margin="10" VerticalContentAlignment="Center"
+            <TextBox x:Name="AmountBox" Width="50" Height="30" Margin="5,10" VerticalContentAlignment="Center"
                      HorizontalContentAlignment="Center" />
-            <DatePicker x:Name="DatePicker" Margin="10" Width="100" Height="30" FirstDayOfWeek="Monday"
+            <Label x:Name="MaxAmountLabel" Margin="-5,10,0,10" Width="40" VerticalContentAlignment="Center" Padding="5,5,0,5"/>
+            <DatePicker x:Name="DatePicker" Margin="5,10" Width="100" Height="30" FirstDayOfWeek="Monday"
                         VerticalContentAlignment="Center"
-                        SelectedDate="{x:Static sys:DateTime.Today}" />
+                        SelectedDate="{x:Static sys:DateTime.Today}" Padding="0,2,2,2" />
             <Button Content="Добавить запись" Margin="10" Height="30" Width="120" Click="AddSaleButton_OnClick" />
         </StackPanel>
         <ListView x:Name="SalesView" Grid.Row="1">

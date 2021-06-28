@@ -15,9 +15,9 @@ namespace GSS
 
         public SuppliesWindow()
         {
-            List<Goods> goods;
             InitializeComponent();
 
+            List<Goods> goods;
             using (var context = new GoodsContext())
             {
                 goods = context.goods.ToList();
@@ -26,7 +26,7 @@ namespace GSS
 
             GoodComboBox.ItemsSource = goods;
             SuppliesView.ItemsSource = _supplies;
-            _view = (CollectionView) CollectionViewSource.GetDefaultView(SuppliesView.ItemsSource);
+            _view = (CollectionView)CollectionViewSource.GetDefaultView(SuppliesView.ItemsSource);
         }
 
         private void AddSupplyButton_Click(object sender, RoutedEventArgs e)
