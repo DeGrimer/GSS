@@ -14,7 +14,7 @@ namespace GSS
 
         public string Name => Good.ToString();
 
-        public string DepartmentName => $"ŒÚ‰ÂÎ \"{Good.Department}\"";
+        public string DepartmentName => $"–û—Ç–¥–µ–ª \"{Good.Department}\"";
 
         public override string ToString()
         {

@@ -34,7 +34,6 @@ namespace GSS
             using (var db = new GoodsContext())
             {
                 var supplies = db.supplies.ToList();
-
                 _sales = db.sales.ToList();
                 _depts = db.departments.Include(d => d.Goods).ToList();
                 _storageParams = StorageCalculate.CalculateStorageParameters(_depts);

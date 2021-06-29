@@ -189,7 +189,6 @@
     <Compile Include="SalesWindow.xaml.cs">
       <DependentUpon>SalesWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StorageLogic\ListAvailableGoods.cs" />
     <Compile Include="StorageLogic\StorageCalculate.cs" />
     <Compile Include="StorageParameters.cs" />
     <Compile Include="StorageWindow.xaml.cs">
